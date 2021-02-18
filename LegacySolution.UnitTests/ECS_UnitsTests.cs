@@ -38,6 +38,7 @@ namespace LegacySolution.UnitTests
         //    //});
         //}
 
+
         [Test]
         public void ECS_GetCurTemp_Is45()
         {
