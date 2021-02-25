@@ -7,61 +7,47 @@ namespace LegacySolution.UnitTests
     public class Tests
     {
         private ECS uut;
-        private int thr = 30;
-        private ITempSensor fakeTempSensorLT;
-        private ITempSensor fakeTempSensorHT;
-        private IHeater fakeHeaterTrue;
+        private int thr = 23;
+        private FakeTempSensor fakeTempSensor;
+        private FakeHeater fakeHeater;
 
         [SetUp]
         public void Setup()
         {
-            fakeTempSensorLT = new FakeTempSensorLTThr();
-            fakeTempSensorHT = new FakeTempSensorHTThr();
-            fakeHeaterTrue = new FakeHeaterTrue();
-            uut = new ECS(thr, fakeHeaterTrue);
+            fakeTempSensor = new FakeTempSensor();
+            fakeHeater = new FakeHeater();
+            uut = new ECS(thr, fakeHeater,fakeTempSensor);
         }
 
         [Test]
-        public void ECS_Regulate_WithThresholdOf46_WillCall_TurnOn()
+        public void ECS_Regulate_Low_Temp()
         {
-            uut.SetThreshold(46);
-            var temp = fakeTempSensorLT.GetTemp();
-            uut.Regulate(temp); //den går bare ind og overskriver temp, da i Regulate selver kalder GetTemp()
-
-            Assert.That(temp, Is.LessThan(46));
-
-            //Assert.Multiple(() =>
-            //{
-            //    uut.SetThreshold(20);
-            //    uut.Regulate();
-
-            //    //Assert.That(uut.Regulate();
-            //});
-        }
-
-
-        [Test]
-        public void ECS_GetCurTemp_Is45()
-        {
-            Assert.That(uut.GetCurTemp(fakeTempSensorHT), Is.EqualTo(45));
+            fakeTempSensor.Temp = 21;
+            uut.Regulate();
+            Assert.That(fakeHeater.TurnOnCounter, Is.EqualTo(1));
         }
 
         [Test]
-        public void ECS_GetCurTemp_IsMinus5()
+        public void ECS_Regulate_High_Temp()
         {
-            Assert.That(uut.GetCurTemp(fakeTempSensorLT), Is.EqualTo(-5));
+            fakeTempSensor.Temp = 28;
+            
+            //Act
+            uut.Regulate();
+
+            //Assert
+            Assert.That(fakeHeater.TurnOffCounter, Is.EqualTo(1));
         }
 
-        [Test]
-        public void ECS_RunSelfTest_IsTrue()
+        [TestCase(true,true,true)]
+        [TestCase(true, false, false)]
+        [TestCase(false, true, false)]
+        [TestCase(false, false, false)]
+        public void ECS_RunSelfTest(bool hresult,bool tresult,bool testresult)
         {
-            Assert.That(uut.RunSelfTest(fakeTempSensorLT, new FakeHeaterTrue()), Is.True);
-        }
-
-        [Test]
-        public void ECS_RunSelfTest_IsFalse()
-        {
-            Assert.That(uut.RunSelfTest(fakeTempSensorLT, new FakeHeaterFalse()), Is.False);
+            fakeTempSensor.RunSelfTestBool = tresult;
+            fakeHeater.RunSelfTestBool = hresult;
+            Assert.That(uut.RunSelfTest(), Is.EqualTo(testresult));
         }
     }
 }

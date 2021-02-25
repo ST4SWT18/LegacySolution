@@ -6,16 +6,15 @@
         {
             IHeater heater = new Heater();
             ITempSensor tempSensor = new TempSensor();
-            double temp = tempSensor.GetTemp();
 
-            var ecs = new ECS(28, heater);
+            var ecs = new ECS(28, heater,tempSensor);
 
-            ecs.Regulate(temp);
+            ecs.Regulate();
 
             ecs.SetThreshold(20);
 
-            ecs.Regulate(temp); //test
-            ecs.RunSelfTest(tempSensor, heater);
+            ecs.Regulate(); //test
+            ecs.RunSelfTest();
         }
     }
 }
