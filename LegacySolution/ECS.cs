@@ -13,10 +13,10 @@
             _heater = heater;
         }
 
-        public void Regulate()
+        public void Regulate(double temp)
         {
-            var t = TempSensor.GetTemp();
-            if (t < _threshold)
+            temp = TempSensor.GetTemp();
+            if (temp < _threshold)
                 _heater.TurnOn();
             else
                 _heater.TurnOff();

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace LegacySolution.UnitTests.Fakes
 {
     public class FakeHeaterTrue : IHeater
@@ -9,12 +11,12 @@ namespace LegacySolution.UnitTests.Fakes
 
         public void TurnOn()
         {
-            throw new System.NotImplementedException();
+            Debug.WriteLine("On");
         }
 
         public void TurnOff()
         {
-            throw new System.NotImplementedException();
+            Debug.WriteLine("Off");
         }
     }
 }
