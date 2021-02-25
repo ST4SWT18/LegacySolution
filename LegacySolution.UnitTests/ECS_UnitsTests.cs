@@ -31,7 +31,11 @@ namespace LegacySolution.UnitTests
         public void ECS_Regulate_High_Temp()
         {
             fakeTempSensor.Temp = 28;
+            
+            //Act
             uut.Regulate();
+
+            //Assert
             Assert.That(fakeHeater.TurnOffCounter, Is.EqualTo(1));
         }
 
