@@ -6,10 +6,10 @@
         public ITempSensor TempSensor { get; set; }
         private readonly IHeater _heater;
 
-        public ECS(int thr, IHeater heater)
+        public ECS(int thr, IHeater heater,ITempSensor tempSensor)
         {
             SetThreshold(thr);
-            TempSensor = new TempSensor();
+            TempSensor = tempSensor;
             _heater = heater;
         }
 
@@ -33,14 +33,14 @@
             return _threshold;
         }
 
-        public int GetCurTemp(ITempSensor tempSensor)
+        public int GetCurTemp()
         {
-            return tempSensor.GetTemp();
+            return TempSensor.GetTemp();
         }
 
-        public bool RunSelfTest(ITempSensor tempSensor, IHeater heater)
+        public bool RunSelfTest()
         {
-            return tempSensor.RunSelfTest() && heater.RunSelfTest();
+            return TempSensor.RunSelfTest() && _heater.RunSelfTest();
         }
     }
 }
