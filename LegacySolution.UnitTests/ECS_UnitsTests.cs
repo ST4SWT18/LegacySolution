@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using LegacySolution;
 using LegacySolution.UnitTests.Fakes;
@@ -29,10 +30,11 @@ namespace LegacySolution.UnitTests
             //uut = new ECS(thr, fakeHeater,fakeTempSensor);
         }
 
-        [Test]
-        public void ECS_Regulate_Low_Temp()
+        [TestCase(22)]
+        [TestCase(-5)]
+        public void ECS_Regulate_Low_Temp(int temp)
         {
-            _tempSensor.GetTemp().Returns(21);
+            _tempSensor.GetTemp().Returns(temp);
             uut.Regulate();
             _heater.Received(1).TurnOn();
 
@@ -41,13 +43,14 @@ namespace LegacySolution.UnitTests
             //Assert.That(fakeHeater.TurnOnCounter, Is.EqualTo(1));
         }
 
-        [Test]
-        public void ECS_Regulate_High_Temp()
+        [TestCase(23)]
+        [TestCase(24)]
+        [TestCase(45)]
+        public void ECS_Regulate_High_Temp(int temp)
         {
-            _tempSensor.GetTemp().Returns(28);
+            _tempSensor.GetTemp().Returns(temp);
             uut.Regulate();
             _heater.Received(1).TurnOff();
-
 
             ////Before NSubstitute
             //fakeTempSensor.Temp = 28;
@@ -57,6 +60,15 @@ namespace LegacySolution.UnitTests
 
             ////Assert
             //Assert.That(fakeHeater.TurnOffCounter, Is.EqualTo(1));
+        }
+
+        //BVA test - invalid values
+        [TestCase(-6)]
+        [TestCase(46)]
+        public void ECS_GetCurTemp_Invalid_Values(int temp)
+        {
+            _tempSensor.GetTemp().Returns(temp);
+            Assert.Throws<InvalidOperationException>(() => uut.Regulate());
         }
 
         [TestCase(true,true,true)]

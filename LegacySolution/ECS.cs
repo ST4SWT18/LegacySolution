@@ -1,4 +1,6 @@
-﻿namespace LegacySolution
+﻿using System;
+
+namespace LegacySolution
 {
     public class ECS
     {
@@ -15,7 +17,7 @@
 
         public void Regulate()
         {
-            var t = TempSensor.GetTemp();
+            var t = GetCurTemp();
             if (t < _threshold)
                 _heater.TurnOn();
             else
@@ -35,7 +37,13 @@
 
         public int GetCurTemp()
         {
-            return TempSensor.GetTemp();
+            int temp = TempSensor.GetTemp();
+            if (-5 <= temp && temp <= 45)
+            {
+                return temp;
+            }
+
+            throw new InvalidOperationException();
         }
 
         public bool RunSelfTest()
